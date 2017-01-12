@@ -43,4 +43,39 @@ describe 'ArtistsController endpoints' do
       expect(body).to have_json_path("albums/0/year")
     end
   end
+
+  describe 'POST /artists' do
+    context 'authenticated user' do
+      context 'with valid attributes' do
+        it 'returns JSON for the new artist' do
+          user = FactoryGirl.create(:user)
+          headers = { "Authorization" => "Token token=#{user.authentication_token}" }
+          artist_attributes = { name: "Leonard Cohen" }
+
+          post(
+            artists_url,
+            headers,
+            artist_attributes.to_json
+          )
+
+          expect(response).to have_http_status :created
+          # ...
+        end
+      end
+
+      context 'with invalid attributes' do
+        context 'such as missing a name' do
+          it 'returns a 422 response with errors'
+        end
+
+        context 'such as a duplicate name' do
+          it 'returns a 422 response with errors'
+        end
+      end
+    end
+
+    context 'unauthenticated user' do
+      it 'returns a 401 response'
+    end
+  end
 end
